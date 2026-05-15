@@ -84,11 +84,47 @@
     });
   }
 
+  /* ----------- Theme toggle ----------- */
+  function bindThemeToggle() {
+    const root = document.documentElement;
+    // Ensure attribute exists (inline head-script sets it, but defensive)
+    if (!root.getAttribute('data-theme')) {
+      let saved = 'light';
+      try { saved = localStorage.getItem('voltix-theme') || 'light'; } catch (e) {}
+      root.setAttribute('data-theme', saved);
+    }
+    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cur = root.getAttribute('data-theme') || 'light';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('voltix-theme', next); } catch (e) {}
+      });
+    });
+  }
+
+  /* ----------- Scroll to top button ----------- */
+  function bindScrollTop() {
+    const btn = document.querySelector('[data-scroll-top]');
+    if (!btn) return;
+    function onScroll() {
+      if (window.scrollY > 400) btn.classList.add('show');
+      else btn.classList.remove('show');
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    onScroll();
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     bindWaLinks();
     bindMenu();
     bindFloatingActions();
     markActive();
     setYear();
+    bindThemeToggle();
+    bindScrollTop();
   });
 })();
